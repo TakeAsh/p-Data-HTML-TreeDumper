@@ -1,15 +1,21 @@
-
+[![Actions Status](https://github.com/TakeAsh/p-Data-HTML-TreeDumper/actions/workflows/test.yml/badge.svg)](https://github.com/TakeAsh/p-Data-HTML-TreeDumper/actions)
 # NAME
 
-Data::HTML::TreeDumper - It's new $module
+Data::HTML::TreeDumper - dumps perl data as HTML5 open/close tree
 
 # SYNOPSIS
 
     use Data::HTML::TreeDumper;
+    my $td = Data::HTML::TreeDumper->new(
+        ClassKey    => 'trdKey',
+        ClassValue  => 'trdValue',
+    );
+    my $obj = someFunction();
+    print $td->dump($obj);
 
 # DESCRIPTION
 
-Data::HTML::TreeDumper is ...
+Data::HTML::TreeDumper dumps perl data as HTML5 open/close tree.
 
 # LICENSE
 
@@ -20,4 +26,4 @@ it under the same terms as Perl itself.
 
 # AUTHOR
 
-TakeAsh &lt;take@TakeAsh.net>
+[TakeAsh](https://github.com/TakeAsh/)
