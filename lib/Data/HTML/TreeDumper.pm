@@ -10,7 +10,7 @@ use Ref::Util  qw(is_ref is_scalarref is_arrayref is_hashref);
 use Const::Fast;
 use HTML::Entities;
 
-use version 0.77; our $VERSION = version->declare("v0.0.1");
+use version 0.77; our $VERSION = version->declare("v0.0.2");
 
 $YAML::Syck::ImplicitUnicode = 1;
 $YAML::Syck::ImplicitTyping  = 1;
@@ -22,20 +22,32 @@ const my %default => (
     ClassOrderedList   => 'trdOL',
     ClassUnorderedList => 'trdUL',
     StartOrderedList   => 0,
+    MaxDepth           => 32,
 );
+
+#region Class methods
 
 sub new {
     my $class = shift;
-    my $args  = { %default, ( is_hashref( $_[0] ) ? %{ $_[0] } : @_ ) };
-    my $self  = {};
+    my $args  = {
+        %default,
+        MaxDepth => 8,
+        ( is_hashref( $_[0] ) ? %{ $_[0] } : @_ ),
+    };
+    my $self = {};
     bless $self, $class;
     $self->ClassKey( $args->{ClassKey} );
     $self->ClassValue( $args->{ClassValue} );
     $self->ClassOrderedList( $args->{ClassOrderedList} );
     $self->ClassUnorderedList( $args->{ClassUnorderedList} );
     $self->StartOrderedList( $args->{StartOrderedList} );
+    $self->MaxDepth( $args->{MaxDepth} );
     return $self;
 }
+
+#endregion
+
+#region Properties
 
 sub ClassKey {
     my $self = shift;
@@ -77,6 +89,22 @@ sub StartOrderedList {
     return $self->{StartOrderedList};
 }
 
+sub MaxDepth {
+    my $self = shift;
+    if (@_) {
+        my $value = shift;
+        $self->{MaxDepth}
+            = $value < 0                  ? 0
+            : $value > $default{MaxDepth} ? $default{MaxDepth}
+            :                               $value;
+    }
+    return $self->{MaxDepth};
+}
+
+#endregion
+
+#region Instance methods
+
 sub dump {
     my $self  = shift;
     my $x     = shift // return $self->_dumpRaw('[undef]');
@@ -87,7 +115,7 @@ sub dump {
         : is_scalarref($x) ? $self->dump( ${$x}, $name, $depth + 1 )
         : is_arrayref($x)  ? $self->_dumpArray( $x, $name, $depth + 1 )
         : is_hashref($x)   ? $self->_dumpHash( $x, $name, $depth + 1 )
-        :                    $self->_dumpRaw('[error]');
+        :                    $self->_dumpRaw( $x, $name );
     return $result;
 }
 
@@ -111,8 +139,12 @@ sub _dumpArray {
     my $x     = shift // '';
     my $name  = $self->_normalizeName( $x, shift );
     my $depth = shift || 0;
+    if ( $depth > $self->MaxDepth() ) {
+        return sprintf( '<span class="%s">%s</span>: <span class="%s">[...]</span>',
+            $self->ClassKey(), encode_entities($name), $self->ClassValue() );
+    }
     my $inner
-        = join( "", map { sprintf( '<li>%s</li>', $self->dump( $_, undef, $depth + 1 ) ); } @{$x} );
+        = join( "", map { sprintf( '<li>%s</li>', $self->dump( $_, undef, $depth ) ); } @{$x} );
     return sprintf(
         '<details><summary class="%s">%s</summary><ol class="%s" start="%d">%s</ol></details>',
         $self->ClassKey(), encode_entities($name),
@@ -126,13 +158,17 @@ sub _dumpHash {
     my $x     = shift // '';
     my $name  = $self->_normalizeName( $x, shift );
     my $depth = shift || 0;
+    if ( $depth > $self->MaxDepth() ) {
+        return sprintf( '<span class="%s">%s</span>: <span class="%s">{...}</span>',
+            $self->ClassKey(), encode_entities($name), $self->ClassValue() );
+    }
     my $inner = join(
         "",
         map {
             is_arrayref( $x->{$_} )
-                ? sprintf( "<li>%s</li>", $self->_dumpArray( $x->{$_}, $_, $depth + 1 ) )
+                ? sprintf( '<li>%s</li>', $self->_dumpArray( $x->{$_}, $_, $depth + 1 ) )
                 : is_hashref( $x->{$_} )
-                ? sprintf( "<li>%s</li>", $self->_dumpHash( $x->{$_}, $_, $depth + 1 ) )
+                ? sprintf( '<li>%s</li>', $self->_dumpHash( $x->{$_}, $_, $depth + 1 ) )
                 : sprintf( '<li><span class="%s">%s</span>: %s</li>',
                 $self->ClassKey(), encode_entities($_), $self->dump( $x->{$_}, $_, $depth + 1 ) )
         } sort( keys( %{$x} ) )
@@ -140,6 +176,8 @@ sub _dumpHash {
     return sprintf( '<details><summary class="%s">%s</summary><ul class="%s">%s</ul></details>',
         $self->ClassKey(), encode_entities($name), $self->ClassUnorderedList(), $inner );
 }
+
+#endregion
 
 1;
 __END__
