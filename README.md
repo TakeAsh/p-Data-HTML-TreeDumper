@@ -9,9 +9,12 @@ Data::HTML::TreeDumper - dumps perl data as HTML5 open/close tree
     my $td = Data::HTML::TreeDumper->new(
         ClassKey    => 'trdKey',
         ClassValue  => 'trdValue',
+        MaxDepth    => 8,
     );
     my $obj = someFunction();
     print $td->dump($obj);
+
+There are [some samples](https://raw.githack.com/TakeAsh/p-Data-HTML-TreeDumper/master/examples/output/sample1.html).
 
 # DESCRIPTION
 
