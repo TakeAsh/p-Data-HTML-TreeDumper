@@ -187,7 +187,7 @@ __END__
 
 =head1 NAME
 
-Data::HTML::TreeDumper - dumps perl data as HTML5 open/close tree
+L<Data::HTML::TreeDumper> - dumps perl data as HTML5 open/close tree
 
 =head1 SYNOPSIS
 
