@@ -10,7 +10,7 @@ use Ref::Util  qw(is_ref is_scalarref is_arrayref is_hashref);
 use Const::Fast;
 use HTML::Entities;
 
-use version 0.77; our $VERSION = version->declare("v0.0.2");
+use version 0.77; our $VERSION = version->declare("v0.0.3");
 
 $YAML::Syck::ImplicitUnicode = 1;
 $YAML::Syck::ImplicitTyping  = 1;
@@ -47,7 +47,7 @@ sub new {
 
 #endregion
 
-#region Properties
+#region Instance properties
 
 sub ClassKey {
     my $self = shift;
@@ -180,6 +180,7 @@ sub _dumpHash {
 #endregion
 
 1;
+
 __END__
 
 =encoding utf-8
@@ -205,6 +206,47 @@ There are L<some samples|https://raw.githack.com/TakeAsh/p-Data-HTML-TreeDumper/
 
 Data::HTML::TreeDumper dumps perl data as HTML5 open/close tree.
 
+=head1 CLASS METHODS
+
+=head2 new([option => value, ...])
+
+Creates a new Data::HTML::TreeDumper instance.
+This method can take a list of options.
+You can set each options later as the properties of the instance.
+
+=head3 ClassKey, ClassValue, ClassOrderedList, ClassUnorderedList
+
+CSS class names for each items.
+OrderedList is for arrays.
+UnorderedList is for hashes.
+
+=head3 StartOrderedList
+
+An integer to start counting from for arrays.
+Default is 0.
+
+=head3 MaxDepth
+
+Stops following object tree at this level, and show "..." instead.
+Default is 8.
+Over 32 is not acceptable to prevent memory leak.
+
+=head1 INSTANCE METHODS
+
+=head2 dump($object)
+
+Dumps perl data as a HTML5 open/close tree.
+
+=head1 SOURCE
+
+Source repository is at L<p-Data-HTML-TreeDumper|https://github.com/TakeAsh/p-Data-HTML-TreeDumper> .
+
+=head1 SEE ALSO
+
+=head2 Similar CPAN modules:
+
+L<Data::HTMLDumper>, L<Data::Dumper::HTML>, L<Data::Format::Pretty::HTML>
+
 =head1 LICENSE
 
 Copyright (C) TakeAsh.
@@ -217,4 +259,3 @@ it under the same terms as Perl itself.
 L<TakeAsh|https://github.com/TakeAsh/>
 
 =cut
-

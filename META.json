@@ -71,7 +71,7 @@
          "web" : "https://github.com/TakeAsh/p-Data-HTML-TreeDumper"
       }
    },
-   "version" : "v0.0.2",
+   "version" : "v0.0.3",
    "x_authority" : "cpan:TAKEASH",
    "x_contributors" : [
       "TakeAsh <take@TakeAsh.net>"
