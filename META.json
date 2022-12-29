@@ -44,6 +44,7 @@
          "requires" : {
             "Const::Fast" : "0",
             "Encode" : "0",
+            "HTML::AutoTag" : "0",
             "HTML::Entities" : "0",
             "Ref::Util" : "0",
             "YAML::Syck" : "0",
