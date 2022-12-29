@@ -11,7 +11,7 @@ use Const::Fast;
 use HTML::Entities;
 use HTML::AutoTag;
 
-use version 0.77; our $VERSION = version->declare("v0.0.3");
+use version 0.77; our $VERSION = version->declare("v0.0.4");
 
 $YAML::Syck::ImplicitUnicode = 1;
 $YAML::Syck::ImplicitTyping  = 1;
